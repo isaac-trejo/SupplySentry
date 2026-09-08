@@ -8,7 +8,7 @@ A real-time supply chain stress monitoring and forecasting platform. Combines 7 
 
 | Layer    | Stack                                      |
 |----------|--------------------------------------------|
-| Frontend | Next.js 16, React 19, TypeScript, Recharts |
+| Frontend | Next.js, React, TypeScript, Recharts       |
 | Backend  | Flask, pandas, scikit-learn                |
 | Data     | FRED API (fredapi)                         |
 
@@ -24,7 +24,7 @@ A real-time supply chain stress monitoring and forecasting platform. Combines 7 
 | US Imports              | IMPGSC1     | 10%    |
 | Manufacturing Employment| MANEMP      | 10%    |
 
-All signals are normalized to [0, 1]. Freight, imports, and manufacturing are inverted so that higher values always indicate more stress.
+All signals are normalized to [0, 1]. Freight, imports, and manufacturing are inverted so that higher values = more stress.
 
 ## Stress Zones
 
@@ -37,10 +37,17 @@ Each zone maps to portfolio recommendations (defensive positioning, balanced all
 ## Forecasting
 
 A two-stage residual model predicts GSSI 3 months forward:
-
 1. Component-level HuberRegressor models predict each signal's deviation from its EWMA baseline
 2. Forecasted signals are recombined into a GSSI forecast
 3. Walk-forward cross-validation ensures the model beats naive baselines (RAE < 1)
+
+![metrics](gssi_model_metrics.png) 
+* Naive last is the reference baseline that other prediction methods compared to
+* GSSI residual performance mirrors decision to model component residuals before constructing GSSI
+* Computing GSSI via residual forecasting 18.3% lower absolute error vs. component residual forecasting 38.9% lower absolute error
+
+
+
 
 ## API Endpoints
 
@@ -69,5 +76,3 @@ cd my-app
 npm install
 npm run dev
 ```
-
-Run the pipeline first via `POST /pipeline/run`, then open the dashboard at `http://localhost:3000`.
